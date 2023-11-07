@@ -1,0 +1,42 @@
+version: '3'
+services:
+  hora-certa-api:
+    container_name: hora-certa-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8181:8181
+    depends_on:
+      - postgres
+    links:
+      - postgres:postgres
+    image: hora-certa-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./src:/api/src
+      - ./node_modules:/api/node_modules
+    networks:
+      - hora-certa-network
+
+  postgres:
+    image: postgres:alpine
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - hora-certa-network
+
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    networks:
+      - hora-certa-network
+
+networks:
+  hora-certa-network:
+    external: true
